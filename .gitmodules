@@ -4,3 +4,6 @@
 [submodule "bounce"]
 	path = bounce
 	url = git://gist.github.com/2424184.git
+[submodule "led-scroller"]
+	path = led-scroller
+	url = git://gist.github.com/1192523.git
