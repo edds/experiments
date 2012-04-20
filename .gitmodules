@@ -1,0 +1,3 @@
+[submodule "svg-mask"]
+	path = svg-mask
+	url = git://gist.github.com/2420298.git
