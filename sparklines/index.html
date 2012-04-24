@@ -1,0 +1,72 @@
+<!doctype html>
+
+<title>Sparklines in d3.js</title>
+<style>
+  .sparkline path {
+    stroke: #000;
+    stroke-width: #000;
+    fill: none;
+  }
+</style>
+
+<h1>Sparklines in d3.js</h1>
+
+
+<div id="data"></div>
+
+<button>update</button>
+
+<script src="./d3-2.9.1.min.js"></script>
+<script>
+if(typeof d3 === 'undefined') { throw "d3.js is required for this demo" }
+
+var data = function(){
+  // Get us some dummy data. Adjust these two paramaters and everything
+  // should be auto-scaled to fit.
+  var numberOfEntries = 120,
+      maxValue = 66,
+      i, _i, out = [];
+  for(i=0, _i=numberOfEntries; i<_i; i++){
+    out.push(Math.round(Math.random() * maxValue));
+  }
+  return out;
+};
+var sparkline = function(el, options){
+  var width = options.width || 200,
+      height = options.height || 20,
+      data = options.data || [],
+      svg = d3.select(el)
+        .append('svg:svg')
+          .attr('width', width)
+          .attr('height', height)
+          .attr('class', 'sparkline'),
+      maxY = d3.max(data),
+      x = d3.scale.linear().domain([0, data.length]).range([0, width]),
+      y = d3.scale.linear().domain([0, maxY]).range([height, 0]), // flipped so zero is along the bottom
+      line = d3.svg.line()
+        .interpolate('linear')
+        .x(function(d, i) { return x(i); })
+        .y(function(d, i) { return y(d); }),
+      path = svg.append('svg:path')
+        .data([data])
+        .attr('d', line);
+
+  return {
+    update: function(newData){
+      path.data([newData])
+        .transition()
+        .duration(500)
+        .ease('linear')
+        .attr('d', line);
+    }
+  }
+}
+window.addEventListener('DOMContentLoaded', function(){
+  sparky = sparkline('#data', { data: data() });
+  document.getElementsByTagName('button')[0].addEventListener('click', function(){
+    sparky.update(data());
+  }, false);
+}, false);
+</script>
+
+
