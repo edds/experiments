@@ -1,0 +1,113 @@
+<!doctype html>
+
+<title>Multi-Line Chart in d3.js</title>
+<style>
+  path.line {
+    stroke: #000;
+    fill: none;
+  }
+  path.area {
+    fill: #f0f;
+    opacity: 0.3;
+  }
+  circle {
+    fill: #fff;
+    stroke: #000;
+  }
+</style>
+
+<h1>Multi-Line Chart in d3.js</h1>
+
+
+<div id="data"></div>
+
+<button>update</button>
+
+<script src="./d3-2.9.1.min.js"></script>
+<script>
+if(typeof d3 === 'undefined') { throw "d3.js is required for this demo" }
+
+var data = function(){
+  // Get us some dummy data. Adjust these two paramaters and everything
+  // should be auto-scaled to fit.
+  var numberOfEntries = 120,
+      maxValue = 100,
+      i, _i, out = [], adjust = Math.random() * 6.28;
+  for(i=0, _i=numberOfEntries; i<_i; i++){
+    out.push(Math.round(Math.cos(i/10 + adjust) * maxValue) + maxValue);
+  }
+  return out;
+};
+var multiLine = function(el, options){
+  var width = options.width || 600,
+      height = options.height || 200,
+      data1 = options.data1 || [],
+      data2 = options.data2 || [],
+      svg = d3.select(el)
+        .append('svg:svg')
+          .attr('width', width)
+          .attr('height', height)
+          .attr('class', 'multiLine'),
+      axis = svg.append('g').attr('class', 'axis'),
+      xaxis, yaxisLeft, yaxisRight;
+
+  var line1 = drawLine(data1);
+  var line2 = drawLine(data2);
+
+  function drawLine(data){
+    var plot = svg.append('g').attr('class', 'data1').data([data]),
+        max = d3.max(data1),
+        x = d3.scale.linear().domain([0, data.length]).range([0, width]),
+        y = d3.scale.linear().domain([0, max]).range([height, 0]), // flipped so zero is along the bottom
+        lines = plot.append('g'),
+        line = d3.svg.line()
+          .interpolate('linear')
+          .x(function(d, i) { return x(i); })
+          .y(function(d, i) { return y(d); }),
+        linePath = lines.append('svg:path')
+          .attr('d', line)
+          .attr('class', 'line'),
+        area = d3.svg.area()
+          .interpolate('linear')
+          .x(line.x())
+          .y(line.y())
+          .y0(y(0)),
+        areaPath = lines.append('svg:path')
+          .attr('d', area)
+          .attr('class', 'area'),
+        dots = plot.selectAll('circle')
+            .data(data)
+          .enter().append('circle')
+            .attr('class', 'point')
+            .attr('cx', line.x())
+            .attr('cy', line.y())
+            .attr('r', 2);
+
+      return {
+        update: function(data){
+          linePath.data([data]).transition()
+            .duration(500).attr('d', line);
+          areaPath.data([data]).transition()
+            .duration(500).attr('d', area);
+          dots.data(data).transition()
+            .duration(500).attr('cy', line.y());
+        }
+      }
+  }
+
+  return {
+    update: function(newData1, newData2){
+      line1.update(newData1);
+      line2.update(newData2);
+    }
+  }
+}
+window.addEventListener('DOMContentLoaded', function(){
+  sparky = multiLine('#data', { data1: data(), data2: data() });
+  document.getElementsByTagName('button')[0].addEventListener('click', function(){
+    sparky.update(data(), data());
+  }, false);
+}, false);
+</script>
+
+
