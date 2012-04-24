@@ -1,5 +1,7 @@
 A collection of self standing html/js/css experiments.
 
+View them rendered here: [edds.github.com/experiments](http://edds.github.com/experiments/)
+
 ---
 
 All code is rleased under the MIT Licence unless otherwise stated. 
