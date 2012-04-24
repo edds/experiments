@@ -2,6 +2,9 @@
 
 <title>Multi-Line Chart in d3.js</title>
 <style>
+  text {
+    font-size: 12px;
+  }
   path.line {
     stroke: #000;
     fill: none;
@@ -21,6 +24,10 @@
     stroke: #000;
     stroke-width: 1px;
   }
+  .axis .x-tick,
+  .axis .y-tick {
+    stroke: #ddd;
+  }
 </style>
 
 <h1>Multi-Line Chart in d3.js</h1>
@@ -31,115 +38,24 @@
 <button>update</button>
 
 <script src="./d3-2.9.1.min.js"></script>
+<script src="./multiline.js"></script>
 <script>
 if(typeof d3 === 'undefined') { throw "d3.js is required for this demo" }
 
 var data = function(){
   // Get us some dummy data. Adjust these two paramaters and everything
   // should be auto-scaled to fit.
-  var numberOfEntries = 60,
-      maxValue = 100,
+  var numberOfEntries = 12,
+      maxValue = 30,
       i, _i, out = [], adjust = Math.random() * 6.28;
   for(i=0, _i=numberOfEntries; i<_i; i++){
     out.push(Math.round(Math.cos(i/10 + adjust) * maxValue) + maxValue);
   }
   return out;
 };
-var multiLine = function(el, options){
-  var padding = options.padding || 20,
-      width = (options.width || 600) - padding * 2,
-      height = (options.height || 200) - padding * 2,
-      svg = d3.select(el)
-        .append('svg:svg')
-          .attr('width', (width + padding * 2))
-          .attr('height', (height + padding * 2))
-          .attr('class', 'multiLine')
-        .append('g').attr('transform', 'translate('+padding+','+padding+')'),
-      axis = svg.append('g').attr('class', 'axis'),
-      axisCords = [
-        // [ y1, y2, x1, x2 ]
-        [ 0.5, width+.5, height+.5, height+.5 ],
-        [ 0.5, 0.5, 0.5, height+.5 ],
-        [ width+.5, width+.5, 0.5, height+.5 ]
-      ],
-      line, lines = {};
-
-  for(line in options.data){
-    lines[line] = drawLine(line, options.data[line]);
-  }
-  axisCords.map(function(data){
-    axis.append('svg:line')
-        .attr('x1', data[0])
-        .attr('x2', data[1])
-        .attr('y1', data[2])
-        .attr('y2', data[3]);
-  });
-
-  function drawLine(className, data){
-    var plot = svg.append('g').attr('class', 'line-plot '+className).data([data]),
-        max = d3.max(data),
-        // data.length - 1 because we are plotting at the start of the x band
-        x = d3.scale.linear().domain([0, data.length-1]).range([0, width]),
-        y = d3.scale.linear().domain([0, max]).range([height, 0]), // flipped so zero is along the bottom
-        lines = plot.append('g'),
-        line = d3.svg.line()
-          .interpolate('linear')
-          .x(function(d, i) { return x(i); })
-          .y(function(d, i) { return y(d); }),
-        linePath = lines.append('svg:path')
-          .attr('d', line)
-          .attr('class', 'line'),
-        area = d3.svg.area()
-          .interpolate('linear')
-          .x(line.x())
-          .y(line.y())
-          .y0(y(0)),
-        areaPath = lines.append('svg:path')
-          .attr('d', area)
-          .attr('class', 'area'),
-        dots = plot.selectAll('circle')
-            .data(data)
-          .enter().append('circle')
-            .attr('class', 'point')
-            .attr('cx', line.x())
-            .attr('cy', line.y())
-            .attr('r', 2);
-
-    dots.on('mouseover', function(d, i){
-      tooltip(i, x(i), y(d))
-    });
-
-    return {
-      update: function(data){
-        linePath.data([data]).transition()
-          .duration(500).attr('d', line);
-        areaPath.data([data]).transition()
-          .duration(500).attr('d', area);
-        dots.data(data).transition()
-          .duration(500).attr('cy', line.y());
-      }
-    }
-  }
-  function tooltip(index, x, y){
-    var line;
-    for(line in lines){
-      if(window.console && console.log){
-        console.log(line + ': '+ options.data[line][index]);
-      }
-    }
-  }
-
-  return {
-    update: function(data){
-      var line;
-      for(line in data){
-        lines[line].update(data[line]);
-      }
-    }
-  }
-}
 window.addEventListener('DOMContentLoaded', function(){
-  sparky = multiLine('#data', { data: { volume: data(), price: data() } });
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  sparky = multiLine('#data', { data: { volume: data(), price: data()},  labels: months });
   document.getElementsByTagName('button')[0].addEventListener('click', function(){
     sparky.update({ volume: data(), price: data() });
   }, false);
