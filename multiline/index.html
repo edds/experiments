@@ -7,12 +7,19 @@
     fill: none;
   }
   path.area {
-    fill: #f0f;
+    fill: #00f;
     opacity: 0.3;
+  }
+  .price .area {
+    fill: #0f0;
   }
   circle {
     fill: #fff;
     stroke: #000;
+  }
+  .axis line {
+    stroke: #000;
+    stroke-width: 1px;
   }
 </style>
 
@@ -39,25 +46,40 @@ var data = function(){
   return out;
 };
 var multiLine = function(el, options){
-  var width = options.width || 600,
-      height = options.height || 200,
-      data1 = options.data1 || [],
-      data2 = options.data2 || [],
+  var padding = options.padding || 20,
+      width = (options.width || 600) - padding * 2,
+      height = (options.height || 200) - padding * 2,
       svg = d3.select(el)
         .append('svg:svg')
-          .attr('width', width)
-          .attr('height', height)
-          .attr('class', 'multiLine'),
+          .attr('width', (width + padding * 2))
+          .attr('height', (height + padding * 2))
+          .attr('class', 'multiLine')
+        .append('g').attr('transform', 'translate('+padding+','+padding+')'),
       axis = svg.append('g').attr('class', 'axis'),
-      xaxis, yaxisLeft, yaxisRight;
+      axisCords = [
+        // [ y1, y2, x1, x2 ]
+        [ 0.5, width+.5, height+.5, height+.5 ],
+        [ 0.5, 0.5, 0.5, height+.5 ],
+        [ width+.5, width+.5, 0.5, height+.5 ]
+      ],
+      line, lines = {};
 
-  var line1 = drawLine(data1);
-  var line2 = drawLine(data2);
+  for(line in options.data){
+    lines[line] = drawLine(line, options.data[line]);
+  }
+  axisCords.map(function(data){
+    axis.append('svg:line')
+        .attr('x1', data[0])
+        .attr('x2', data[1])
+        .attr('y1', data[2])
+        .attr('y2', data[3]);
+  });
 
-  function drawLine(data){
-    var plot = svg.append('g').attr('class', 'data1').data([data]),
-        max = d3.max(data1),
-        x = d3.scale.linear().domain([0, data.length]).range([0, width]),
+  function drawLine(className, data){
+    var plot = svg.append('g').attr('class', 'line-plot '+className).data([data]),
+        max = d3.max(data),
+        // data.length - 1 because we are plotting at the start of the x band
+        x = d3.scale.linear().domain([0, data.length-1]).range([0, width]),
         y = d3.scale.linear().domain([0, max]).range([height, 0]), // flipped so zero is along the bottom
         lines = plot.append('g'),
         line = d3.svg.line()
@@ -96,16 +118,18 @@ var multiLine = function(el, options){
   }
 
   return {
-    update: function(newData1, newData2){
-      line1.update(newData1);
-      line2.update(newData2);
+    update: function(data){
+      var line;
+      for(line in data){
+        lines[line].update(data[line]);
+      }
     }
   }
 }
 window.addEventListener('DOMContentLoaded', function(){
-  sparky = multiLine('#data', { data1: data(), data2: data() });
+  sparky = multiLine('#data', { data: { volume: data(), price: data() } });
   document.getElementsByTagName('button')[0].addEventListener('click', function(){
-    sparky.update(data(), data());
+    sparky.update({ volume: data(), price: data() });
   }, false);
 }, false);
 </script>
