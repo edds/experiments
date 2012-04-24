@@ -37,7 +37,7 @@ if(typeof d3 === 'undefined') { throw "d3.js is required for this demo" }
 var data = function(){
   // Get us some dummy data. Adjust these two paramaters and everything
   // should be auto-scaled to fit.
-  var numberOfEntries = 120,
+  var numberOfEntries = 60,
       maxValue = 100,
       i, _i, out = [], adjust = Math.random() * 6.28;
   for(i=0, _i=numberOfEntries; i<_i; i++){
@@ -105,16 +105,28 @@ var multiLine = function(el, options){
             .attr('cy', line.y())
             .attr('r', 2);
 
-      return {
-        update: function(data){
-          linePath.data([data]).transition()
-            .duration(500).attr('d', line);
-          areaPath.data([data]).transition()
-            .duration(500).attr('d', area);
-          dots.data(data).transition()
-            .duration(500).attr('cy', line.y());
-        }
+    dots.on('mouseover', function(d, i){
+      tooltip(i, x(i), y(d))
+    });
+
+    return {
+      update: function(data){
+        linePath.data([data]).transition()
+          .duration(500).attr('d', line);
+        areaPath.data([data]).transition()
+          .duration(500).attr('d', area);
+        dots.data(data).transition()
+          .duration(500).attr('cy', line.y());
       }
+    }
+  }
+  function tooltip(index, x, y){
+    var line;
+    for(line in lines){
+      if(window.console && console.log){
+        console.log(line + ': '+ options.data[line][index]);
+      }
+    }
   }
 
   return {
