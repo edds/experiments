@@ -1,0 +1,79 @@
+<!doctype html>
+
+<title>HumanBytes - Convert Absolute Bytes To Human Bytes</title>
+<style>
+  body {
+    font-family: Helvetica, sans-serif;
+    padding: 4%;
+    line-height: 1.4;
+  }
+  footer {
+    border-top: 1px solid;
+    margin-top: 5em;
+    padding-top: 1em;
+    font-size: 0.8em;
+  }
+</style>
+
+<h1>HumanBytes</h1>
+<h2>Convert Absolute Bytes To Human Bytes</h2>
+
+<p>Given some absolute byte strings convert to an appropriate number of KB, MB, GB, TB, PB</p>
+
+<p>Some byte strings:<br>
+  <span class='bytes'>222</span><br>
+  <span class='bytes'>2222</span><br>
+  <span class='bytes'>22222</span><br>
+  <span class='bytes'>222222</span><br>
+  <span class='bytes'>2222222</span><br>
+  <span class='bytes'>22222222</span><br>
+  <span class='bytes'>222222222</span><br>
+  <span class='bytes'>2222222222</span><br>
+  <span class='bytes'>22222222222</span><br>
+  <span class='bytes'>222222222222</span><br>
+  <span class='bytes'>2222222222222</span><br>
+  <span class='bytes'>22222222222222</span>
+<p>
+<script>
+  var byteConverter = function (bytes){
+    var scale = [ 
+          [  'B', 1 ],
+          [ 'KB', Math.pow(2, 10) ],
+          [ 'MB', Math.pow(2, 20) ],
+          [ 'GB', Math.pow(2, 30) ],
+          [ 'TB', Math.pow(2, 40) ],
+          [ 'PB', Math.pow(2, 50) ]
+        ],
+        round = function(num, points){
+          var factor = Math.pow(10, points);
+          return Math.round( num * factor ) / factor;
+        },
+        format = function(index){
+          return round(bytes / scale[index][1], 2) +" "+ scale[index][0];
+        },
+        i, _i;
+
+    for(i=0,_i=scale.length; i<_i; i++){
+      // if there is only a fraction of our current scale return the previous
+      if(bytes / scale[i][1] < 1){
+        // if we are above bytes there is a previous scale to factor to
+        if(i > 0){
+          return format(i-1);
+        } else {
+          return format(i);
+        }
+      }
+    }
+    // if we haven't returned we are bigger than PB and need to return that.
+    return format(scale.length-1);
+  };
+
+window.addEventListener('DOMContentLoaded', function (){
+  var elms = document.getElementsByClassName('bytes');
+  // Lazy way of getting an array from a NodeList so I can itterate on it.
+  Array.prototype.slice.call(elms).forEach(function(el){
+    var bytes = parseInt(el.innerText, 10);
+    el.innerHTML = byteConverter(bytes);
+  });
+}, false);
+</script>
