@@ -1,0 +1,39 @@
+<!doctype html>
+
+<title>Growing Pie</title>
+
+
+<style>
+path {
+  fill: red;
+}
+</style>
+<svg>
+  <path id="loader"></path>
+</svg>
+
+<script>
+
+(function (duration) {
+  var loader = document.getElementById("loader"), 
+      end = +new Date() + duration,
+      radius = 150,
+      interval;
+  
+  interval = window.setInterval(function(){
+    if(+new Date() > end){
+      window.clearInterval(interval);
+      return true;
+    }
+    var degrees = 360 - 360*((end - new Date())/duration), 
+        y = -Math.cos((degrees/180)*Math.PI)*radius,
+        x = Math.sin((degrees/180)*Math.PI)*radius,
+        mid = (degrees < 180) ? '0,1' : '1,1',
+        d = "M"+radius+","+radius+" v -"+radius+" A"+radius+","+radius+" 1 "+mid+" " + (x+radius) + "," + (y+radius) + " z";
+    x = Math.round(x * 1000)/1000;
+    y = Math.round(y * 1000)/1000;
+    loader.setAttribute("d", d);
+  }, 35);
+}(10e3));
+
+</script>
