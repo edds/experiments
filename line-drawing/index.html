@@ -1,0 +1,53 @@
+<!doctype html>
+
+<title>Stroked line</title>
+<style>
+  body {
+    font-family: Helvetica, sans-serif;
+    padding: 4%;
+    line-height: 1.4;
+  }
+  path {
+    fill: #fff;
+    stroke: #000;
+    stroke-width: 3px;
+  }
+</style>
+
+<h1>Stroked Line</h1>
+<p>Animate the drawing of a line/path in d3.js</p>
+
+<div id="line"></div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+  // Create new svg element
+  var svg = d3.select('#line').append('svg');
+
+  // Create a line with x and y methods
+  var line = d3.svg.line()
+    .interpolate('basis')
+      .x(function(d, i) { return i; })
+      .y(function(d, i) { return Math.sin(i * (Math.PI/180))*50+55; });
+
+  // Append a path element to our svg element
+  var path = svg.append("path")
+    // `Array.apply(null,[720])` is a cheating way of getting an array of 720
+    // empty elements. Take that array and use the line method to create our
+    // data for the path.
+    .attr("d", line(Array.apply(null,[720])));
+
+  // Calculate the total length of the path
+  var totalLength = path.node().getTotalLength();
+
+  // Animate the dashoffset from the length of the line to zero. This slowly
+  // reveals the line.
+  path
+    .attr("stroke-dasharray", totalLength + " " + totalLength)
+    .attr("stroke-dashoffset", totalLength)
+  .transition()
+    .duration(2e3) // 2 seconds
+    .ease("linear")
+    .attr("stroke-dashoffset", 0)
+</script>
