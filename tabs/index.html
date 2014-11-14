@@ -1,0 +1,111 @@
+<!doctype html>
+
+<html>
+<head>
+<title>Accessible tabs</title>
+
+<style>
+ul.js-tabs{
+  list-style-type: none;
+  margin: 0;
+  overflow: hidden;
+}
+ul.js-tabs li {
+  float: left;
+  margin-bottom: 0;
+}
+ul.js-tabs li a {
+  display: block;
+  padding: 9px 16px;
+  background: #eee;
+  border: 2px solid #fff;
+}
+ul.js-tabs li a.active{
+  color: #000;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #999;
+  border-bottom: 1px solid #fff;
+  padding: 10px 15px;
+  font-weight: bold;
+}
+ul.js-tabs li a:focus {
+  background: #ffa500;
+  outline: none;
+}
+.tab-panel{
+  border-top: 1px solid #999;
+  padding: 15px;
+  margin: -1px -15px 15px -15px;
+}
+.tab-panel:focus {
+  outline: none;
+}
+.tabs-2 li { width: 50%; }
+.tabs-3 li { width: 33.33%; }
+.tabs-4 li { width: 25%; }
+.tabs-5 li { width: 20%; }
+
+.tab-example {
+  max-width: 600px;
+  margin: 15px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Accessible tabs</h1>
+
+<p>
+  A tab interface marked up with the appropriate ARIA to make it accessible to screen readers.
+</p>
+
+<div class="tab-example">
+  <ul class="js-tabs tabs-3">
+    <li><a href="#milk" class="active">Milk</a>
+    <li><a href="#eggs">Eggs</a>
+    <li><a href="#cheese">Cheese</a>
+  </ul>
+  <div class="tab-panel" id="milk">
+    <h2>Milk</h2>
+    <p>
+      Milk is a white liquid produced by the mammary glands of mammals. It is
+      the primary source of nutrition for young mammals before they are able to
+      digest other types of food. Early-lactation milk contains colostrum,
+      which carries the mother's antibodies to the baby and can reduce the risk
+      of many diseases in the baby. It also contains many other nutrients.
+    </p>
+  </div>
+  <div class="tab-panel" id="eggs">
+    <h2>Eggs</h2>
+    <p>
+      An egg is the organic vessel containing the zygote in which an animal
+      embryo develops until it can survive on its own, at which point the
+      animal hatches. An egg results from fertilization of an ovum. Most
+      arthropods, vertebrates, and mollusks lay eggs, although some do not,
+      such as scorpions and most mammals.
+    </p>
+  </div>
+  <div class="tab-panel" id="cheese">
+    <h2>Cheese</h2>
+    <p>
+      Cheese is a food derived from milk that is produced in a wide range of
+      flavors, textures, and forms by coagulation of the milk protein casein.
+      It comprises proteins and fat from milk, usually the milk of cows,
+      buffalo, goats, or sheep. During production, the milk is usually
+      acidified, and adding the enzyme rennet causes coagulation. The solids
+      are separated and pressed into final form. Some cheeses have molds on
+      the rind or throughout. Most cheeses melt at cooking temperature.
+    </p>
+  </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="./tabs.js"></script>
+<script>
+  tabs.init();
+</script>
+
+</body>
+</html>
