@@ -12,6 +12,13 @@
     this.$tabList = $tabList;
     this.$tabLinks = this.$tabList.find('a');
 
+    this.$initalActiveLink = this.$tabLinks.filter('.active');
+
+    if(this.$initalActiveLink.length === 0){
+      this.$tabLinks.eq(0).addClass('active');
+      this.$initalActiveLink = this.$tabLinks.eq(0);
+    }
+
     // add link listeners
     this.$tabList.on('click', 'a', this.linkClick.bind(this));
 
@@ -29,8 +36,6 @@
 
     // navigate to a tab if one is defined
     this.hashNavigate();
-
-    this.$initalActiveLink = this.$tabLinks.filter('.active');
   }
   Tabs.prototype = {
     linkClick: function(e) {
@@ -68,9 +73,9 @@
     },
     hashNavigate: function(event){
       if(window.location.hash !== ''){
-        this.$tabLinks.filter('a[href="' + window.location.hash +'"]').focus().click();
+        this.$tabLinks.filter('a[href="' + window.location.hash +'"]').click();
       } else if(window.location.hash === '' && event){
-        this.$initalActiveLink.focus().click();
+        this.$initalActiveLink.click();
       }
     },
     addAriaAttributes: function() {
